@@ -1,21 +1,38 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Home } from "./page/Home";
+import { Post } from "./page/Post";
 import { Profile } from "./page/Profile";
 import { User } from "./page/User";
 import { Routes, Route } from "./react-router";
 
-import { HashRouter } from "./react-router-dom";
+import { BrowserRouter, Link } from "./react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
-  <HashRouter>
+  <BrowserRouter>
+    <div>
+      <ul>
+        <li>
+          <Link to={"/"}>首页</Link>
+        </li>
+        <li>
+          <Link to={"/user"}>用户</Link>
+        </li>
+        <li>
+          <Link to={"profile"}>详情</Link>
+        </li>
+      </ul>
+    </div>
+
     <Routes>
       <Route path="/" element={<Home />}></Route>
       <Route path="/user" element={<User />}></Route>
       <Route path="/profile" element={<Profile />}></Route>
+      <Route path="/post/:id" element={<Post />}></Route>
     </Routes>
-  </HashRouter>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

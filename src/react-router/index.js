@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
 
-const NavigatorContext = React.createContext();
-const LocationContext = React.createContext();
+export const NavigatorContext = React.createContext();
+export const LocationContext = React.createContext();
 // const RouteContext = React.createContext();
+
 export function Router({ children, location, navigator }) {
   // console.log(location, navigator, "Router arguments");
   const navigatorContext = useMemo(() => ({ navigator }), [navigator]);
@@ -25,17 +26,32 @@ export function Routes({ children }) {
 export function Route() {}
 
 export function compilePath(path) {
-  let regexpSource = "^" + path;
+  const pathnames = [];
+  let regexpSource =
+    "^" +
+    path.replace(/:(\w+)/g, (_, key) => {
+      pathnames.push(key);
+      return "([^\\/]+?)";
+    });
   regexpSource += "$";
   let matcher = new RegExp(regexpSource);
-  return matcher;
+  return [matcher, pathnames];
 }
 
 export function matchPath(path, pathname) {
-  let matcher = compilePath(path);
+  //pathname: /id/100/20 || matcher /id/([^\/]+?)/([^\/]+?)
+  let [matcher, paramNames] = compilePath(path);
+
   let match = pathname.match(matcher);
   if (!match) return null;
-  else return match;
+  const matchPathname = match[0];
+  let values = match.slice(1);
+
+  let params = paramNames.reduce((memo, paramName, index) => {
+    memo[paramName] = values[index];
+    return memo;
+  }, {});
+  return { params, path, pathname: matchPathname };
 }
 
 export function useRoutes(routes) {
